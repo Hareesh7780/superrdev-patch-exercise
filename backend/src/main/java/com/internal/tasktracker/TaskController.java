@@ -24,7 +24,11 @@ public class TaskController {
 
         // Normalize query input
         String query = q == null ? "" : q.trim();
-        String searchTerm = "%" + query.toLowerCase() + "%";
+        String escaped = query.toLowerCase()
+           .replace("\\", "\\\\")
+           .replace("%", "\\%")
+           .replace("_", "\\_");
+        String searchTerm = "%" + escaped + "%";
 
         // Parse status filter
         String normalizedStatus = null;
