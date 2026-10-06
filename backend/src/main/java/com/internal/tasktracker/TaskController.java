@@ -43,19 +43,20 @@ public class TaskController {
                 
 
         List<Task> allResults = taskRepository.searchTasks(searchTerm, normalizedStatus);
+        int safePage = Math.max(page, 1);
+        int safePageSize = Math.min(Math.max(pageSize, 1), 100);
 
-        int start = (page - 1) * pageSize;
-        int end = Math.min(start + pageSize, allResults.size());
-        List<Task> pageResults = (start < allResults.size())
-                ? allResults.subList(start, end)
-                : Collections.emptyList();
+        long startLong = (long) (safePage - 1) * safePageSize;
+        int start = (int) Math.min(startLong, allResults.size());
+        int end = Math.min(start + safePageSize, allResults.size());
+        List<Task> pageResults = allResults.subList(start, end);
 
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("items", pageResults);
         response.put("total", allResults.size());
-        response.put("page", page);
-        response.put("pageSize", pageSize);
-
+        response.put("page", safePage);
+        response.put("pageSize", safePageSize);
+        
         return ResponseEntity.ok(response);
     }
 }
